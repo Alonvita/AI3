@@ -7,15 +7,15 @@ public class ParseResult {
     //---------- LOCAL CLASS VARIABLES ----------
     private int clusters;
     private List<Point> points;
-    private ClusteringAlgorithm algorithm;
+    private Algorithm algorithm;
 
     //---------- INITIALIZER ----------
-    public ParseResult(List<Point> points, ClusteringAlgorithm algorithm, int clusters) {
+    public ParseResult(List<Point> points, Algorithm algorithm, int clusters) {
         this.points = points;
         this.algorithm = algorithm;
         this.clusters = clusters;
     }
-add
+
     //---------- GETTERS ----------
 
     /**
@@ -23,7 +23,7 @@ add
      *
      * @return the algorithm this ParseResult holds.
      */
-    public ClusteringAlgorithm getAlgorithm() {
+    public Algorithm getAlgorithm() {
         return algorithm;
     }
 

@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ParseFile Class.
+ * ParseInputFile Class.
  */
-public class ParseFile {
-    //---------- INITIALIZER ----------
-
+public class ParseInputFile {
     /**
-     * ParseFile(String filename) throws Exception.
+     * ParseInputFile(String filename) throws Exception.
      *
      * @param filename String -- a string.
      * @return the parsed result for this solution.
@@ -24,13 +22,17 @@ public class ParseFile {
             throw new Exception("Illegal file format received");
         }
 
-        // initialize a new Cells matrix
-        ClusteringAlgorithm algorithm = parseAlgorithm(lines.get(0));
+        // initialize the algorithm and clusters (two first rows of the file)
+        Algorithm algorithm = parseAlgorithm(lines.get(0));
         int clusters = Integer.parseInt(lines.get(1));
 
-        // Create the list of points
+        // remove two first rows since they were already used
+        lines = lines.subList(2, lines.size());
+
+        // Initialize the list of points
         List<Point> points = new ArrayList<>();
 
+        // Parse the list of points
         for(String s : lines) {
             int x;
             int y;
@@ -40,7 +42,7 @@ public class ParseFile {
             x = c - '0';
 
             // y
-            y = c - '0';
+            y = Integer.parseInt(s.substring(2));
 
             points.add(new Point(x, y));
         }
@@ -49,16 +51,16 @@ public class ParseFile {
     }
 
     /**
-     * ClusteringAlgorithm parseAlgorithm(String s).
+     * Algorithm parseAlgorithm(String s).
      *
      * @param s String -- a string representing an algorithm name.
-     * @return a new ClusteringAlgorithm represented by the given string.
+     * @return an Enum representation of the Algorithm.
      */
-    private static ClusteringAlgorithm parseAlgorithm(String s) {
-        if(s.equals("single link")) {
-            return new SingleLink();
+    private static Algorithm parseAlgorithm(String s) {
+        if(s.equals(Algorithm.SINGLE_LINK.toString())) {
+            return Algorithm.SINGLE_LINK;
         }
 
-        return new AverageLink();
+        return Algorithm.AVERAGE_LINK;
     }
 }
