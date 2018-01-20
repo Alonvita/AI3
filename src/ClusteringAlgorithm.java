@@ -1,7 +1,8 @@
 /**
- * Algorithm Interface.
+ * ClusteringAlgorithm Interface.
  *
- * represents an algorithm to use.
+ * represents a Clustering metod algorithm.
  */
-public interface Algorithm {
+public interface ClusteringAlgorithm {
+    
 }

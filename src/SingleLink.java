@@ -1,4 +1,5 @@
-package PACKAGE_NAME;
-
-public class SignelLink {
+/**
+ * SingleLink Class, implements ClusteringAlgorithm.
+ */
+public class SingleLink implements ClusteringAlgorithm {
 }

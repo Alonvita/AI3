@@ -1,4 +1,5 @@
-package PACKAGE_NAME;
-
-public class AverageLink {
+/**
+ * AverageLink Class, implements ClusteringAlgorithm.
+ */
+public class AverageLink implements ClusteringAlgorithm {
 }
