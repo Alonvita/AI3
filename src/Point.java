@@ -1,5 +1,3 @@
-import java.util.Map;
-
 /**
  * Point Class.
  */
@@ -20,6 +18,17 @@ public class Point {
         this.x = x;
         this.y = y;
     }
+
+    /**
+     * Point(Point p).
+     *
+     * @param p Point -- a point.
+     */
+    public Point(Point p) {
+        this.x = p.getX();
+        this.y = p.getY();
+    }
+
     //---------- GETTERS ----------
 
     /**

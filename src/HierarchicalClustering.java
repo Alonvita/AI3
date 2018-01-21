@@ -1,7 +1,6 @@
 import javafx.util.Pair;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -9,10 +8,13 @@ import java.util.List;
  */
 public class HierarchicalClustering {
     private int maxClusters;
+    private int currentClusters;
     private Algorithm algorithm;
     private List<Point> listPoint;
+    private List<Point> copiedList;
     private List<Pair<Cluster, Double>> clusters;
-    private List<List<Double>> sortedListOfListsByDistances;
+    private List<Pair<Point, Integer>> solution;
+
 
     /**
      * HierarchicalClustering(List<Point> pointList).
@@ -20,12 +22,15 @@ public class HierarchicalClustering {
      * @param pointList List<Point> -- a list of points
      */
     public HierarchicalClustering(List<Point> pointList, Algorithm algorithm, int maxClusters) {
+        currentClusters = 0;
         this.algorithm = algorithm;
         this.maxClusters = maxClusters;
         this.clusters = new ArrayList<>();
         this.listPoint = pointList;
+        this.solution = new ArrayList<>(); // will be used as return value
 
-        sortPointsListByDistances(pointList);
+        copiedList = new ArrayList<>();
+        copiedList.addAll(listPoint);
     }
 
     /**
@@ -33,106 +38,151 @@ public class HierarchicalClustering {
      *
      * @return a List<Pair<Point, Integer>> of points with the cluster their belong to.
      */
-    public List<Pair<Point, Integer>> cluster() {
-        // Local Variables
-        List<Pair<Point, Integer>> solution = new ArrayList<>(); // will be used as return value
+    public List<Integer> cluster() {
 
-        // get the min of mins
-        Pair<Integer, Integer> minOfMins = getMinimalDistanceIndex(this.sortedListOfListsByDistances);
+        while (!listPoint.isEmpty()) {
+            Point current = listPoint.get(0);
 
-        
+            // initialize first cluster
+            if (currentClusters == 0) {
+                // create the first cluster
+                initializeClusterFor(current);
 
-        return solution;
-    }
+                // remember solution for the point
+                solution.add(new Pair<>(new Point(current), currentClusters));
 
-    /**
-     * sortPointsListByDistances().
-     */
-    private void sortPointsListByDistances(List<Point> pointList) {
-        // Local Variables
-        List<List<Double>> distancesAsListOfLists = new ArrayList<>();
-        int startFrom = 1;
+            } else { // first cluster already exist
+                // check if current point belongs to any of the clusters
+                for (Pair<Cluster, Double> pair : this.clusters) {
+                    Cluster c = pair.getKey();
 
-        for (Point p1 : pointList) {
-            // create a new list for this point
-            List<Double> distancesForCurrent = new ArrayList<>();
+                    // add to Cluster if possible
+                    if (c.addIfBelongs(current)) {
+                        solution.add(new Pair<>(new Point(current), clusters.indexOf(pair) + 1));
+                        break;
+                    } else if (this.currentClusters < this.maxClusters) { // space available for another cluster
+                        initializeClusterFor(current);
 
-            // start second loop from the index after current do avoid double values
-            for (Point p2 : pointList.subList(startFrom, pointList.size())) {
-                // add distance to List for current p1
-                distancesForCurrent.add(p1.distanceFrom(p2));
-            }
+                        // remember solution for the point
+                        solution.add(new Pair<>(new Point(current), currentClusters));
+                        break;
+                    } else {
+                        // space is full, add to the best cluster available
+                        int addedTo = addToBestCluster(current);
+                        listPoint.remove(current);
 
-            // add current distances to the List of Lists
-            distancesAsListOfLists.add(distancesForCurrent);
-
-            // reinitialize minDistance and advance startFrom
-            startFrom++;
-        }
-
-        // sort the list of lists
-        for(List<Double> list : distancesAsListOfLists) {
-            sortListOfDoubles(list);
-        }
-
-        // update local variable with the sorted list of lists
-        this.sortedListOfListsByDistances = distancesAsListOfLists;
-    }
-
-    /**
-     * sortListOfDoubles(List<List<Double>> listOfLists).
-     *
-     * @param list List<Double> -- a list of Doubles
-     */
-    private void sortListOfDoubles(List<Double> list) {
-        // got the list of lists of distances, now sort it
-        list.sort(Comparator.comparing(Double::new));
-    }
-
-    /**
-     * getMinimalDistanceIndex(List<List<Double>> listOfLists).
-     *
-     * @param listOfLists List<List<Double>> -- a list of lists of Doubles.
-     * @return the minimal distance in the list of lists as Pair<Integer, Integer> representing two points
-     *          in this.pointsList at indexes x and y; or the distance between them from the list of lists.
-     * <p>
-     * assuming given a List of List of Doubles that is already sorted.
-     */
-    private Pair<Integer, Integer> getMinimalDistanceIndex(List<List<Double>> listOfLists) {
-        // Local Variables
-        Integer minX = null;
-        Integer minY = null;
-        Double minOfMins = Double.MAX_VALUE;
-        Integer i = 0;
-        Integer j = 0;
-
-        for (List<Double> list : listOfLists) {
-            // inner loop variables
-            Double currentMin = Double.MAX_VALUE;
-            Integer currentMinX = null;
-            Integer currentMinY = null;
-
-            for (Double d : list) {
-                if (d < currentMin) {
-                    // smaller or equal -> update min and get index
-                    currentMin = d;
-                    currentMinX = i;
-                    currentMinY = j;
+                        solution.add(new Pair<>(new Point(current), addedTo));
+                        break;
+                    }
                 }
-                ++j;
             }
+            // remove point from list
+            listPoint.remove(current);
+        }
 
-            if (currentMin < minOfMins) {
-                minOfMins = currentMin;
-                minX = currentMinX;
-                minY = currentMinY;
+        return solutionAsListOfIntegers();
+    }
+
+    /**
+     * getClosestTo(Point p).
+     *
+     * @param p Point -- a point.
+     * @return the index of closest point to this one from the listPoint
+     */
+    private int getIndexOfClosestTo(Point p) {
+        // Local Variables
+        Double closest = Double.MAX_VALUE;
+        int closestIndex = 0;
+        int i = 0;
+
+        for (Point p1 : listPoint) {
+            Double currentDistance = p.distanceFrom(p1);
+
+            if (currentDistance != 0) {
+                if (currentDistance < closest) {
+                    closest = currentDistance;
+                    closestIndex = i;
+                }
             }
 
             ++i;
-            j = 0;
         }
 
-        // return the minimal of minimals index
-        return new Pair<>(minX, minY);
+        return closestIndex;
+    }
+
+    /**
+     * initializeClusterFor(Point point).
+     *
+     * @param point Point -- a point.
+     */
+    private void initializeClusterFor(Point point) {
+        // cluster added
+        currentClusters++;
+
+        // Local Variables
+        int closest = getIndexOfClosestTo(point);
+        Point closestP = listPoint.get(closest);
+        Double closestPDistance = point.distanceFrom(closestP);
+
+        Cluster cluster = new Cluster(closestPDistance, algorithm);
+
+        Point newP = new Point(point);
+
+        cluster.add(newP);
+        cluster.add(closestP);
+
+        // add the cluster to clusters list
+        this.clusters.add(new Pair<>(cluster, cluster.getIndicator()));
+
+        // add to solutions and remove point found from the ArrayList
+        this.solution.add(new Pair<>(closestP, currentClusters));
+        listPoint.remove(closestP);
+    }
+
+    /**
+     * addToBestCluster(Point p).
+     *
+     * @param p Point -- a point.
+     */
+    private int addToBestCluster(Point p) {
+        // Local Variables
+        double minimalDistFromIndicator = Double.MAX_VALUE;
+        int clusterIndex = 0;
+        int i = 0;
+
+        for (Pair<Cluster, Double> pair : this.clusters) {
+            Cluster c = pair.getKey();
+
+            double dist = c.calcChangePotential(p);
+
+            if (dist < minimalDistFromIndicator) {
+                minimalDistFromIndicator = dist;
+                clusterIndex = i + 1;
+            }
+            ++i;
+        }
+
+        return clusterIndex;
+    }
+
+    /**
+     * solutionAsListOfIntegers().
+     *
+     * @return the solution as List<Integer>.
+     */
+    private List<Integer> solutionAsListOfIntegers() {
+        List<Integer> solutionAsListOfIntegers = new ArrayList<>();
+
+        for (Point p : copiedList) {
+            for (Pair<Point, Integer> pair : solution) {
+                if (p.equals(pair.getKey())) {
+                    solutionAsListOfIntegers.add(pair.getValue());
+                    break;
+                }
+            }
+        }
+
+        return solutionAsListOfIntegers;
     }
 }

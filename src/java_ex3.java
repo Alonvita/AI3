@@ -1,7 +1,6 @@
-import javafx.util.Pair;
-
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
-import java.util.Scanner;
 
 import static java.lang.System.exit;
 
@@ -9,11 +8,9 @@ import static java.lang.System.exit;
  * java_ex3 Class -- Main.
  */
 public class java_ex3 {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         // Local main variables
-        Scanner fp = new Scanner(System.in);
-        System.out.println("Please enter input.txt file path:");
-        String path = fp.next();
+        String path = "input.txt";
         ParseResult parseResult;
 
         try {
@@ -24,8 +21,15 @@ public class java_ex3 {
                             parseResult.getAlgorithm(),
                             parseResult.getClusters()
                     );
-            List<Pair<Point, Integer>> clusteredList = hierarchicalClustering.cluster();
+            List<Integer> clusteredList = hierarchicalClustering.cluster();
 
+            StringBuilder stringBuilder = new StringBuilder();
+            for(Integer i : clusteredList) {
+                stringBuilder.append(i);
+                stringBuilder.append('\n');
+
+                Files.write(Paths.get("output.txt"), stringBuilder.toString().getBytes());
+            }
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
