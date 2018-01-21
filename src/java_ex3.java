@@ -1,3 +1,6 @@
+import javafx.util.Pair;
+
+import java.util.List;
 import java.util.Scanner;
 
 import static java.lang.System.exit;
@@ -6,7 +9,7 @@ import static java.lang.System.exit;
  * java_ex3 Class -- Main.
  */
 public class java_ex3 {
-    public static void main(String[] args) throws Exception{
+    public static void main(String[] args) throws Exception {
         // Local main variables
         Scanner fp = new Scanner(System.in);
         System.out.println("Please enter input.txt file path:");
@@ -15,12 +18,19 @@ public class java_ex3 {
 
         try {
             parseResult = ParseInputFile.ParseFile(path);
+            HierarchicalClustering hierarchicalClustering =
+                    new HierarchicalClustering(
+                            parseResult.getPoints(),
+                            parseResult.getAlgorithm(),
+                            parseResult.getClusters()
+                    );
+            List<Pair<Point, Integer>> clusteredList = hierarchicalClustering.cluster();
+
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
             System.out.println("Exiting...");
             exit(-1);
         }
-
-
     }
 }

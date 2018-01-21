@@ -78,7 +78,7 @@ public class Point {
      * @param other Point -- the point to check distanceFrom from
      * @return the distanceFrom between both points
      */
-    public double distanceFrom(Point other) {
+    public Double distanceFrom(Point other) {
         int x2 = other.getX();
         int y2 = other.getY();
 

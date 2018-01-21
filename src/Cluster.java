@@ -24,10 +24,12 @@ public class Cluster {
      * a given point should be a part of this Cluster or not. Every point added to the cluster
      * will update the indicator.
      */
-    public Cluster(double indicator, Algorithm algorithm) {
+    public Cluster(double indicator, Algorithm algorithm, Point p) {
         this.indicator = indicator;
         this.algorithm = algorithm;
         this.pointList = new ArrayList<>();
+
+        this.pointList.add(p);
     }
 
     /**
