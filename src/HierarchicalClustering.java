@@ -69,7 +69,6 @@ public class HierarchicalClustering {
                     } else {
                         // space is full, add to the best cluster available
                         int addedTo = addToBestCluster(current);
-                        listPoint.remove(current);
 
                         solution.add(new Pair<>(new Point(current), addedTo));
                         break;

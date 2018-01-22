@@ -30,30 +30,7 @@ public class Cluster {
         this.pointList = new ArrayList<>();
     }
 
-    /**
-     * Cluster(double indicator, Algorithm algorithm, List<Point> points).
-     *
-     * @param indicator duble -- hold the value defined by the algorithm given to determine whether
-     *                  a given point should be a part of this Cluster or not.
-     * @param algorithm Algorithm -- Single Link or Average Link
-     * @param points    List<Point> -- a given list of points
-     */
-    public Cluster(double indicator, Algorithm algorithm, List<Point> points) {
-        this.indicator = indicator;
-        this.algorithm = algorithm;
-        this.pointList = points;
-    }
-
     //----------- GETTERS ----------
-
-    /**
-     * getPointList().
-     *
-     * @return the list of points inside this cluster as List<Point>.
-     */
-    public List<Point> getPointList() {
-        return pointList;
-    }
 
     /**
      * getIndicator().
@@ -132,9 +109,11 @@ public class Cluster {
 
         if (sum != 0) {
             double average = sum / pointList.size();
-            indicator = indicator < average ? indicator : average;
-            this.pointList.add(point);
-            return true;
+            if(average < indicator) {
+                indicator = average;
+                this.pointList.add(point);
+                return true;
+            }
         }
 
         // point was NOT added -- return false
@@ -167,7 +146,7 @@ public class Cluster {
 
         if (sum != 0) {
             // calc the change in indicator for adding this point
-            minChange = indicator - (sum / (this.pointList.size() + 1));
+            minChange = Math.abs(indicator - (sum / (this.pointList.size() + 1)));
         }
 
         return minChange;
