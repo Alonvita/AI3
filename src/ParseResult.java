@@ -61,4 +61,13 @@ public class ParseResult {
     public List<List<Point>> getClusters() {
         return clusters;
     }
+
+    /**
+     * getNumberOfClusters().
+     *
+     * @return the number of clusters.
+     */
+    public int getNumberOfClusters() {
+        return numberOfClusters;
+    }
 }

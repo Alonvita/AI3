@@ -34,12 +34,14 @@ public class HierarchicalClustering {
         distances = parseResult.getDist();
         clusters = parseResult.getClusters();
         maxClusters = parseResult.getMaxClusters();
+        clusteringIndicator = parseResult.getNumberOfClusters();
     }
 
     /**
      * cluster().
      */
     public void cluster() {
+        // Local Variables
         Double maxDist, currentDist;
         int i, j;
 
