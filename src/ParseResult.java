@@ -1,47 +1,64 @@
 import java.util.List;
 
-/**
- * ParseResult Class.
- */
 public class ParseResult {
     //---------- LOCAL CLASS VARIABLES ----------
-    private int clusters;
     private List<Point> points;
-    private Algorithm algorithm;
+    private List<List<Point>> clusters;
+    private Distance<List<Point>> dist;
+    private int maxClusters;
+    private int numberOfClusters;
 
-    //---------- INITIALIZER ----------
-    public ParseResult(List<Point> points, Algorithm algorithm, int clusters) {
+    /**
+     * ParseResult(List<Point> points, List<List<Point>> clusters, Distance<List<Point>> dist, int maxClusters).
+     *
+     * @param points List<Point> -- a list of points
+     * @param clusters List<List<Point>> -- a list of clusters
+     * @param dist Distance<List<Point>> -- the list of distances defined by algorithm
+     * @param maxClusters int -- the max number of clusters
+     * @param numberOfClusters int -- a given number of clusters
+     */
+    public ParseResult(List<Point> points, List<List<Point>> clusters,
+                       Distance<List<Point>> dist, int maxClusters, int numberOfClusters) {
         this.points = points;
-        this.algorithm = algorithm;
         this.clusters = clusters;
-    }
-
-    //---------- GETTERS ----------
-
-    /**
-     * ClusteringAlgorithm getAlgorithm().
-     *
-     * @return the algorithm this ParseResult holds.
-     */
-    public Algorithm getAlgorithm() {
-        return algorithm;
-    }
-
-    /**
-     * getClusters().
-     *
-     * @return the number of clusters required.
-     */
-    public int getClusters() {
-        return clusters;
+        this.dist = dist;
+        this.maxClusters = maxClusters;
+        this.numberOfClusters = numberOfClusters;
     }
 
     /**
      * getPoints().
      *
-     * @return the list of points this ParseResult holds as List<Point>.
+     * @return the list of points in the ParseResult.
      */
     public List<Point> getPoints() {
         return points;
+    }
+
+    /**
+     * getDist().
+     *
+     * @return the list of distanced in the PraseResult.
+     */
+    public Distance<List<Point>> getDist() {
+        return dist;
+    }
+
+    /**
+     * getMaxClusters().
+     *
+     * @return the max number of clusters held by the ParseResult.
+     */
+    public int getMaxClusters() {
+        return maxClusters;
+    }
+
+    /**
+     * getClusters().
+     *
+     * @return the list of clusters held by the ParseResult.
+     */
+    public List<List<Point>> getClusters() {
+        return clusters;
     }
 }
